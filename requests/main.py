@@ -1,18 +1,22 @@
-import json, time, logging, requests
+import json
+import logging
 import os
-import threading
-from threading import Lock, Thread
+import requests
+import time
+from threading import RLock, Thread
 from pathlib import Path
 from queue import Queue
 
+THREAD_COUNT = 4
 
-class SendRequest(threading.Thread):
 
-    def __init__(self, queue):
+class SendRequest(Thread):
+
+    def __init__(self, queue, lock):
         """Инициализация потока"""
-        threading.Thread.__init__(self)
+        Thread.__init__(self)
         self.queue = queue
-        self.lock = threading.Lock()
+        self.lock = lock
 
     def run(self):
         """Запуск потока"""
@@ -25,33 +29,11 @@ class SendRequest(threading.Thread):
             self.queue.task_done()
 
     def check_and_write_id(self, id):
-        # функция проверяет наличие ID в списке и если его там нет записывает его в список
-        # self.lock.acquire()
-        # try:
-        #     # 1 вариант
-        #     ids = []
-        #     ids = [w for w in Path("id.txt").read_text(encoding="utf-8").replace("\n", " ").split()]
-        #     # 2 вариант
-        #     # write_id = True
-        #     # with open("id.txt", "r") as file1:
-        #     # # итерация по строкам
-        #     #     for line1 in file1:
-        #     #         if line1.rstrip('\n') == id:
-        #     #             write_id = False
-        #     if not id in ids:
-        #         file2 = open("id.txt", "a")
-        #         file2.write(id + '\n')
-        #         file2.close()
-        #     else:
-        #         logging.info(f"Ошибка: запрос с id {id} уже был направлен")
-        # finally:
-        #     self.lock.release()
         with self.lock:
-            ids = []
             ids = [w for w in Path("id.txt").read_text(encoding="utf-8").replace("\n", " ").split()]
-            if not id in ids:
+            if id not in ids:
                 file2 = open("id.txt", "a")
-                file2.write(id + '\n')
+                file2.write(str(id) + '\n')
                 file2.close()
             else:
                 logging.info(f"Ошибка: запрос с id {id} уже был направлен")
@@ -63,7 +45,7 @@ class SendRequest(threading.Thread):
             "bar": ["https://yachtclubparus.ru/test/", "https://yachtclubparus.ru/test/2/"],
             "baz": ["https://yachtclubparus.ru/test/2/", "https://yachtclubparus.ru/test/1/"]
         }
-        logging.basicConfig(filename="sample.log", level=logging.INFO,
+        logging.basicConfig(level=logging.INFO,
                             format="%(asctime)s - %(levelname)s - %(funcName)s: %(lineno)d - %(message)s")
 
         jline = json.loads(line.rstrip('\n'))
@@ -71,7 +53,7 @@ class SendRequest(threading.Thread):
         # получаем список адресов из конфига для отправки запросов
         if jline['client_id'] and jline['payload'] and jline['client_id'] in config_clients.keys():
             # проверяем на выполнение нужных условий
-            if jline['id']:
+            if jline.get('id'):
                 # формируем список уникальных id или выдаем сообщение об ошибке
                 self.check_and_write_id(jline['id'])
             for i in range(len(list_url)):
@@ -96,13 +78,16 @@ class SendRequest(threading.Thread):
 
 
 def http_post():
-    open('id.txt', 'w').close()
-    open('sample.log', 'w').close()
+    # Зачем создавать пустые файлы?
+    # open('id.txt', 'w').close()
+    # open('sample.log', 'w').close()
+
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    lines = os.path.join(dir_path, "sample.txt")
+    lines = os.path.join(dir_path, "requests.txt")
     queue = Queue()
-    for j in range(4):
-        t = SendRequest(queue)
+    lock = RLock()
+    for j in range(THREAD_COUNT):
+        t = SendRequest(queue, lock)
         t.daemon = True
         t.start()
     with open(lines, 'r') as fp:
