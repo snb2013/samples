@@ -60,13 +60,12 @@ class SendRequest(Thread):
                 # начинаем перебирать адреса из конфига и отправлять на них последовательно запросы
                 logging.info(f"Отправляем запрос {jline['payload']} на адрес: {list_url[i]}")
                 response = requests.post(list_url[i], data=jline['payload'])
-                print(response.status_code)
                 if response.status_code != 200:
                     # если вернулся не код 200 начинаем удваивать интервал времени и повторять запросы
                     time_size = 1
                     while response.status_code != 200:
                         time.sleep(time_size)
-                        time_size = time_size * 2
+                        time_size *= 2
                         logging.info(
                             f"Увеличиваем время отправки запроса {jline['payload']} на адрес {list_url[i]} до: {time_size} секунд")
                         response = requests.post(list_url[i], data=jline['payload'])
