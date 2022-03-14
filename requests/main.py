@@ -82,7 +82,6 @@ class SendRequest(Thread):
             if jline.get('id'):
                 # формируем список уникальных id или выдаем сообщение об ошибке
                 self.check_and_write_id(jline['id'])
-<<<<<<< HEAD
             if not self.next_request:
                 # если запрос на такой ID был, пропускаем его
                 for i in range(len(list_url)):
@@ -107,24 +106,6 @@ class SendRequest(Thread):
                     logging.info(f"Запрос {jline['payload']} на адрес: {list_url[i]} успешно выполнен.")
             self.next_request = False
             # переключаем флаг, чтобы следующий запрос мог уйти
-=======
-            for i in range(len(list_url)):
-                # начинаем перебирать адреса из конфига и отправлять на них последовательно запросы
-                logging.info(f"Отправляем запрос {jline['payload']} на адрес: {list_url[i]}")
-                response = requests.post(list_url[i], data=jline['payload'])
-                if response.status_code != 200:
-                    # если вернулся не код 200 начинаем удваивать интервал времени и повторять запросы
-                    time_size = 1
-                    while response.status_code != 200:
-                        time.sleep(time_size)
-                        time_size *= 2
-                        logging.info(
-                            f"Увеличиваем время отправки запроса {jline['payload']} на адрес {list_url[i]} до: {time_size} секунд")
-                        response = requests.post(list_url[i], data=jline['payload'])
-                    logging.info(f"Запрос {jline['payload']} на адрес: {list_url[i]} успешно выполнен")
-                else:
-                    logging.info(f"Запрос {jline['payload']} на адрес: {list_url[i]} успешно выполнен")
->>>>>>> 31bedbb32aeb88b63652d7637980e4cc1c566249
         else:
             logging.info(f"Обработка запроса: Client_ID: {jline['client_id']}, playload: {jline['payload']} - ошибка")
 
