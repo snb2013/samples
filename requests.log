@@ -478,3 +478,24 @@
 2022-03-14 17:41:29,790 - INFO - http_post: 149 - Запрос a=1&b=2 на адрес: https://yachtclubparus.ru/test/ успешно выполнен.
 2022-03-14 17:41:29,790 - INFO - http_post: 140 - Отправляем запрос {"a": 1, "b": 2} на адрес: https://yachtclubparus.ru/test/2/
 2022-03-14 17:41:30,090 - INFO - http_post: 149 - Запрос {"a": 1, "b": 2} на адрес: https://yachtclubparus.ru/test/2/ успешно выполнен.
+2022-03-15 11:40:07,312 - INFO - send_request: 90 - Отправляем запрос {"a": 1, "b": 2} на адрес: https://yachtclubparus.ru/test/2/
+2022-03-15 11:40:09,761 - INFO - send_request: 100 - Увеличиваем время отправки запроса {"a": 1, "b": 2} на адрес https://yachtclubparus.ru/test/2/ до: 2 секунд
+2022-03-15 11:40:10,387 - INFO - send_request: 90 - Отправляем запрос {"a": 1, "b": 2} на адрес: https://yachtclubparus.ru/test/
+2022-03-15 11:40:12,010 - INFO - send_request: 90 - Отправляем запрос {"a": 1, "b": 2} на адрес: https://yachtclubparus.ru/test/2/
+2022-03-15 11:40:12,018 - INFO - send_request: 107 - Запрос {"a": 1, "b": 2} на адрес: https://yachtclubparus.ru/test/ успешно выполнен. Строка 2 обработана
+2022-03-15 11:40:12,018 - INFO - send_request: 90 - Отправляем запрос {"a": 1, "b": 2} на адрес: https://yachtclubparus.ru/test/2/
+2022-03-15 11:40:12,499 - INFO - send_request: 107 - Запрос {"a": 1, "b": 2} на адрес: https://yachtclubparus.ru/test/2/ успешно выполнен. Строка 3 обработана
+2022-03-15 11:40:12,499 - INFO - send_request: 90 - Отправляем запрос {"a": 1, "b": 2} на адрес: https://yachtclubparus.ru/test/1/
+2022-03-15 11:40:13,508 - INFO - send_request: 100 - Увеличиваем время отправки запроса {"a": 1, "b": 2} на адрес https://yachtclubparus.ru/test/2/ до: 4 секунд
+2022-03-15 11:40:14,067 - INFO - send_request: 100 - Увеличиваем время отправки запроса {"a": 1, "b": 2} на адрес https://yachtclubparus.ru/test/2/ до: 2 секунд
+2022-03-15 11:40:14,727 - INFO - send_request: 90 - Отправляем запрос a=1&b=2 на адрес: https://yachtclubparus.ru/test/
+2022-03-15 11:40:17,295 - INFO - send_request: 100 - Увеличиваем время отправки запроса {"a": 1, "b": 2} на адрес https://yachtclubparus.ru/test/1/ до: 2 секунд
+2022-03-15 11:40:17,792 - INFO - send_request: 107 - Запрос a=1&b=2 на адрес: https://yachtclubparus.ru/test/ успешно выполнен. Строка 4 обработана
+2022-03-15 11:40:17,792 - INFO - send_request: 90 - Отправляем запрос a=1&b=2 на адрес: https://yachtclubparus.ru/test/2/
+2022-03-15 11:40:18,373 - INFO - send_request: 100 - Увеличиваем время отправки запроса {"a": 1, "b": 2} на адрес https://yachtclubparus.ru/test/2/ до: 4 секунд
+2022-03-15 11:40:20,461 - INFO - send_request: 100 - Увеличиваем время отправки запроса {"a": 1, "b": 2} на адрес https://yachtclubparus.ru/test/2/ до: 8 секунд
+2022-03-15 11:41:16,574 - INFO - http_post: 142 - Отправляем запрос {"a": 1, "b": 2} на адрес: https://yachtclubparus.ru/test/2/
+2022-03-15 11:41:33,333 - INFO - http_post: 150 - Увеличиваем время отправки запроса {"a": 1, "b": 2} на адрес https://yachtclubparus.ru/test/2/ до: 2 секунд
+2022-03-15 11:41:33,632 - INFO - http_post: 152 - Запрос {"a": 1, "b": 2} на адрес: https://yachtclubparus.ru/test/2/ успешно выполнен.
+2022-03-15 11:41:33,633 - INFO - http_post: 142 - Отправляем запрос {"a": 1, "b": 2} на адрес: https://yachtclubparus.ru/test/2/
+2022-03-15 11:41:52,790 - INFO - http_post: 152 - Запрос {"a": 1, "b": 2} на адрес: https://yachtclubparus.ru/test/2/ успешно выполнен.
