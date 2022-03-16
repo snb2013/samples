@@ -8,10 +8,16 @@ from pathlib import Path
 from queue import Queue
 
 THREAD_COUNT = 4
+REQUEST_FILE = 'requests.txt'
+AUTOSAVE_FILE = 'autosave.txt'
+CLIENTS = {
+    "foo": ["https://yachtclubparus.ru/test/", "https://yachtclubparus.ru/test/1/"],
+    "bar": ["https://yachtclubparus.ru/test/", "https://yachtclubparus.ru/test/2/"],
+    "baz": ["https://yachtclubparus.ru/test/2/", "https://yachtclubparus.ru/test/1/"]
+}
 
 
 class SendRequest(Thread):
-
     def __init__(self, queue, lock):
         """Инициализация потока"""
         Thread.__init__(self)
@@ -43,7 +49,7 @@ class SendRequest(Thread):
     
     def autosave_request(self, list_url, payload, number):
         with self.lock:
-            with open("autosave.txt", "a") as f:
+            with open(AUTOSAVE_FILE, "a") as f:
                 d = {
                     "url": list_url,
                     "payload": payload,
@@ -54,32 +60,26 @@ class SendRequest(Thread):
 
     def remove_request(self, list_url, payload):
         with self.lock:
-            with open("autosave.txt", 'r') as fp:
+            with open(AUTOSAVE_FILE, 'r') as fp:
                 for n, line1 in enumerate(fp, 1):
                     jline1 = json.loads(line1.rstrip('\n'))
                     if jline1['url'] == list_url and jline1['payload'] == payload:
                         number_str = n - 1
                         break
-            with open("autosave.txt", "r") as file:
+            with open(AUTOSAVE_FILE, "r") as file:
                 lines2 = file.readlines()
             del lines2[number_str]
-            with open("autosave.txt", "w") as file:
+            with open(AUTOSAVE_FILE, "w") as file:
                 file.writelines(lines2)
 
     def send_request(self, jline):
-
-        config_clients = {
-            "foo": ["https://yachtclubparus.ru/test/", "https://yachtclubparus.ru/test/1/"],
-            "bar": ["https://yachtclubparus.ru/test/", "https://yachtclubparus.ru/test/2/"],
-            "baz": ["https://yachtclubparus.ru/test/2/", "https://yachtclubparus.ru/test/1/"]
-        }
         # logging.basicConfig(filename='requests.log', level=logging.INFO,
                             # format="%(asctime)s - %(levelname)s - %(funcName)s: %(lineno)d - %(message)s")
 
         # jline = json.loads(line.rstrip('\n'))
-        list_url = config_clients.get(jline['client_id'])
+        list_url = CLIENTS.get(jline['client_id'])
         # получаем список адресов из конфига для отправки запросов
-        if jline['client_id'] and jline['payload'] and jline['client_id'] in config_clients.keys():
+        if jline['client_id'] and jline['payload'] and jline['client_id'] in CLIENTS.keys():
             # проверяем на выполнение нужных условий
             if jline.get('id'):
                 # формируем список уникальных id или выдаем сообщение об ошибке
@@ -113,12 +113,12 @@ class SendRequest(Thread):
 
 def http_post():
     # смотрим есть ли сохраненные неотправленные запросы, если да, то отправляем в один поток, не заморчаиваемся
-    logging.basicConfig(filename='requests.log', level=logging.INFO,
-                                    format="%(asctime)s - %(levelname)s - %(funcName)s: %(lineno)d - %(message)s")
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(funcName)s: %(lineno)d - %(message)s")
     save_str = 0
     # переменная в которой будет храниться максмальный номер строки, по которой уходили запросы
-    if os.stat("autosave.txt").st_size:
-        with open("autosave.txt", 'r') as fp:
+    try:
+        # TODO: get rid of copy&paste
+        with open(AUTOSAVE_FILE) as fp:
             for n, line in enumerate(fp, 1):
                 jline = json.loads(line.rstrip('\n'))
                 logging.info(f"Отправляем запрос {jline['payload']} на адрес: {jline['url']}")
@@ -132,9 +132,10 @@ def http_post():
                         logging.info(f"Увеличиваем время отправки запроса {jline['payload']} на адрес {jline['url']} до: {time_size} секунд")
                         response = requests.post(jline['url'], data=jline['payload'])
                 logging.info(f"Запрос {jline['payload']} на адрес: {jline['url']} успешно выполнен.")
-        # очищаем файл
-        f = open('autosave.txt', 'w')
-        f.close()
+
+        os.remove(AUTOSAVE_FILE)
+    except FileNotFoundError:
+        pass
 
     queue = Queue()
     lock = RLock()
@@ -144,7 +145,7 @@ def http_post():
         t.start()
 
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    lines = os.path.join(dir_path, "requests.txt")
+    lines = os.path.join(dir_path, REQUEST_FILE)
     with open(lines, 'r') as fp:
         for n, line in enumerate(fp, 1):
             if n > save_str:
