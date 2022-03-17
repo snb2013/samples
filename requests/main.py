@@ -18,7 +18,28 @@ CLIENTS = {
 }
 
 
-class SendRequest(Thread):
+def send_request(payload, listurl, number, as_request):
+    logging.info(f"Отправляем запрос {payload} на адрес: {listurl}")
+    response = requests.post(listurl, data=payload)
+    if not as_request:
+        SendRequest.autosave_request(listurl, payload, number)
+    # сохраняем строку во временный файл
+    if response.status_code != 200:
+        # если вернулся не код 200 начинаем удваивать интервал времени и повторять запросы
+        time_size = 1
+        while response.status_code != 200:
+            time.sleep(time_size)
+            time_size *= 2
+            logging.info(
+                f"Увеличиваем время отправки запроса {payload} на адрес {listurl} до: {time_size} секунд")
+            response = requests.post(listurl, data=payload)
+    if not as_request:
+        SendRequest.remove_request(listurl, payload, number)
+    logging.info(
+        f"Запрос {payload} на адрес: {listurl} успешно выполнен. Строка {number} обработана")
+
+
+class (Thread):
     def __init__(self, queue, lock):
         """Инициализация потока"""
         Thread.__init__(self)
@@ -33,7 +54,7 @@ class SendRequest(Thread):
             # Получаем строку из очереди
             line = self.queue.get()
             # вызываем функцию отправки запросов по конфигу
-            self.send_request(line)
+            self.job_request(line)
             # Отправляем сигнал о том, что задача завершена
             self.queue.task_done()
 
@@ -73,7 +94,7 @@ class SendRequest(Thread):
             with open(AUTOSAVE_FILE, "w") as file:
                 file.writelines(lines2)
 
-    def send_request(self, jline):
+    def job_request(self, jline):
         list_url = CLIENTS.get(jline['client_id'])
         # получаем список адресов из конфига для отправки запросов
         if jline['client_id'] and jline['payload'] and jline['client_id'] in CLIENTS.keys():
@@ -85,24 +106,7 @@ class SendRequest(Thread):
                 # если запрос на такой ID был, пропускаем его
                 for i in range(len(list_url)):
                     # начинаем перебирать адреса из конфига и отправлять на них последовательно запросы
-                    logging.info(f"Отправляем запрос {jline['payload']} на адрес: {list_url[i]}")
-                    response = requests.post(list_url[i], data=jline['payload'])
-                    self.autosave_request(list_url[i], jline['payload'], jline['number'])
-                    # сохраняем строку во временный файл
-                    if response.status_code != 200:
-                        # если вернулся не код 200 начинаем удваивать интервал времени и повторять запросы
-                        time_size = 1
-                        while response.status_code != 200:
-                            time.sleep(time_size)
-                            time_size *= 2
-                            logging.info(
-                                f"Увеличиваем время отправки запроса {jline['payload']} на адрес {list_url[i]} "
-                                f"до: {time_size} секунд")
-                            response = requests.post(list_url[i], data=jline['payload'])
-                    self.remove_request(list_url[i], jline['payload'], jline['number'])
-                    logging.info(
-                        f"Запрос {jline['payload']} на адрес: {list_url[i]} успешно выполнен. "
-                        f"Строка {jline['number']} обработана")
+                    send_request(jline['payload'], list_url[i], jline['number'], as_request=False)
             self.next_request = False
             # переключаем флаг, чтобы следующий запрос мог уйти
         else:
@@ -116,24 +120,11 @@ def http_post():
     save_str = 0
     # переменная, в которой будет храниться максимальный номер обработанной строки
     try:
-        # TODO: get rid of copy&paste
         with open(AUTOSAVE_FILE) as fp:
             for n, line in enumerate(fp, 1):
                 jline = json.loads(line.rstrip('\n'))
-                logging.info(f"Отправляем запрос {jline['payload']} на адрес: {jline['url']}")
-                response = requests.post(jline['url'], data=jline['payload'])
                 save_str = max(save_str, jline['number'])
-                if response.status_code != 200:
-                    time_size = 1
-                    while response.status_code != 200:
-                        time.sleep(time_size)
-                        time_size *= 2
-                        logging.info(
-                            f"Увеличиваем время отправки запроса {jline['payload']} на адрес {jline['url']} до: "
-                            f"{time_size} секунд")
-                        response = requests.post(jline['url'], data=jline['payload'])
-                logging.info(f"Запрос {jline['payload']} на адрес: {jline['url']} успешно выполнен.")
-
+                send_request(jline['payload'], jline['url'], number=0, as_request=True)
         os.remove(AUTOSAVE_FILE)
     except FileNotFoundError:
         pass
