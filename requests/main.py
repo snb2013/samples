@@ -18,11 +18,9 @@ CLIENTS = {
 }
 
 
-def send_request(payload, listurl, number, as_request):
+def send_request(payload, listurl, number):
     logging.info(f"Отправляем запрос {payload} на адрес: {listurl}")
     response = requests.post(listurl, data=payload)
-    if not as_request:
-        SendRequest.autosave_request(listurl, payload, number)
     # сохраняем строку во временный файл
     if response.status_code != 200:
         # если вернулся не код 200 начинаем удваивать интервал времени и повторять запросы
@@ -33,13 +31,11 @@ def send_request(payload, listurl, number, as_request):
             logging.info(
                 f"Увеличиваем время отправки запроса {payload} на адрес {listurl} до: {time_size} секунд")
             response = requests.post(listurl, data=payload)
-    if not as_request:
-        SendRequest.remove_request(listurl, payload, number)
     logging.info(
         f"Запрос {payload} на адрес: {listurl} успешно выполнен. Строка {number} обработана")
 
 
-class (Thread):
+class SendRequest(Thread):
     def __init__(self, queue, lock):
         """Инициализация потока"""
         Thread.__init__(self)
@@ -60,7 +56,11 @@ class (Thread):
 
     def check_and_write_id(self, id_request):
         with self.lock:
-            ids = [w for w in Path(ID_REQUEST_FILE).read_text(encoding="utf-8").replace("\n", " ").split()]
+            if os.path.exists(ID_REQUEST_FILE):
+                ids = [w for w in Path(ID_REQUEST_FILE).read_text(encoding="utf-8").replace("\n", " ").split()]
+            else:
+                ids = []
+
             if id_request not in ids:
                 file2 = open(ID_REQUEST_FILE, "a")
                 file2.write(str(id_request) + '\n')
@@ -105,8 +105,13 @@ class (Thread):
             if not self.next_request:
                 # если запрос на такой ID был, пропускаем его
                 for i in range(len(list_url)):
+                    payload = jline['payload']
+                    url = list_url[i]
+                    number = jline['number']
+                    self.autosave_request(url, payload, number)
                     # начинаем перебирать адреса из конфига и отправлять на них последовательно запросы
-                    send_request(jline['payload'], list_url[i], jline['number'], as_request=False)
+                    send_request(payload, url, number)
+                    self.remove_request(url, payload, number)
             self.next_request = False
             # переключаем флаг, чтобы следующий запрос мог уйти
         else:
@@ -124,7 +129,7 @@ def http_post():
             for n, line in enumerate(fp, 1):
                 jline = json.loads(line.rstrip('\n'))
                 save_str = max(save_str, jline['number'])
-                send_request(jline['payload'], jline['url'], number=0, as_request=True)
+                send_request(jline['payload'], jline['url'], number=jline['number'])
         os.remove(AUTOSAVE_FILE)
     except FileNotFoundError:
         pass
