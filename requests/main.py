@@ -95,27 +95,37 @@ class SendRequest(Thread):
                 file.writelines(lines2)
 
     def job_request(self, jline):
-        list_url = CLIENTS.get(jline['client_id'])
-        # получаем список адресов из конфига для отправки запросов
-        if jline['client_id'] and jline['payload'] and jline['client_id'] in CLIENTS.keys():
-            # проверяем на выполнение нужных условий
-            if jline.get('id'):
-                # формируем список уникальных id или выдаем сообщение об ошибке
-                self.check_and_write_id(jline['id'])
-            if not self.next_request:
-                # если запрос на такой ID был, пропускаем его
-                for i in range(len(list_url)):
-                    payload = jline['payload']
-                    url = list_url[i]
-                    number = jline['number']
-                    self.autosave_request(url, payload, number)
-                    # начинаем перебирать адреса из конфига и отправлять на них последовательно запросы
-                    send_request(payload, url, number)
-                    self.remove_request(url, payload, number)
-            self.next_request = False
-            # переключаем флаг, чтобы следующий запрос мог уйти
+        if 'client_id' in jline:
+            # если client_id есть, значит это запрос из файла с запросами,
+            # если нет - значит идет досылка из файла avtosave
+            list_url = CLIENTS.get(jline['client_id'])
+            # получаем список адресов из конфига для отправки запросов
+            if jline['client_id'] and jline['payload'] and jline['client_id'] in CLIENTS.keys():
+                # проверяем на выполнение нужных условий
+                if jline.get('id'):
+                    # формируем список уникальных id или выдаем сообщение об ошибке
+                    self.check_and_write_id(jline['id'])
+                if not self.next_request:
+                    # если запрос на такой ID был, пропускаем его
+                    for i in range(len(list_url)):
+                        payload = jline['payload']
+                        url = list_url[i]
+                        number = jline['number']
+                        self.autosave_request(url, payload, number)
+                        # начинаем перебирать адреса из конфига и отправлять на них последовательно запросы
+                        send_request(payload, url, number)
+                        self.remove_request(url, payload, number)
+                self.next_request = False
+                # переключаем флаг, чтобы следующий запрос мог уйти
+            else:
+                logging.info(f"Обработка запроса: Client_ID: {jline['client_id']}, "
+                             f"payload: {jline['payload']} - ошибка")
         else:
-            logging.info(f"Обработка запроса: Client_ID: {jline['client_id']}, payload: {jline['payload']} - ошибка")
+            payload = jline['payload']
+            url = jline['url']
+            number = jline['number']
+            # logging.info(f"Отправка запроса из avtosave.txt payload: {payload} на адрес {url}")
+            send_request(payload, url, number)
 
 
 def http_post():
@@ -124,15 +134,6 @@ def http_post():
                         format="%(asctime)s - %(levelname)s - %(funcName)s: %(lineno)d - %(message)s")
     save_str = 0
     # переменная, в которой будет храниться максимальный номер обработанной строки
-    try:
-        with open(AUTOSAVE_FILE) as fp:
-            for n, line in enumerate(fp, 1):
-                jline = json.loads(line.rstrip('\n'))
-                save_str = max(save_str, jline['number'])
-                send_request(jline['payload'], jline['url'], number=jline['number'])
-        os.remove(AUTOSAVE_FILE)
-    except FileNotFoundError:
-        pass
 
     queue = Queue()
     lock = RLock()
@@ -140,6 +141,16 @@ def http_post():
         t = SendRequest(queue, lock)
         t.daemon = True
         t.start()
+
+    try:
+        with open(AUTOSAVE_FILE) as fp:
+            for n, line in enumerate(fp, 1):
+                jline = json.loads(line.rstrip('\n'))
+                save_str = max(save_str, jline['number'])
+                queue.put(jline)
+        os.remove(AUTOSAVE_FILE)
+    except FileNotFoundError:
+        pass
 
     dir_path = os.path.dirname(os.path.realpath(__file__))
     lines = os.path.join(dir_path, REQUEST_FILE)
