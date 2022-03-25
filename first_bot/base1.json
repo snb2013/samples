@@ -1,0 +1,80 @@
+[
+  [
+    "Menu",
+    "Are you hungry?",
+    [
+      [
+        "Yes",
+        "What would you like to eat?",
+        [
+          [
+            "Hamburger",
+            "I will order hamburger for you!"
+          ],
+          [
+            "Pizza",
+            "Would you like pizza with mushrooms?",
+            [
+              [
+                "Yes",
+                "Ok, I will order the best pizza for you"
+              ],
+              [
+                "No",
+                "No? Stay hungry then"
+              ]
+            ]
+          ]
+        ]
+      ],
+      [
+        "No",
+        "Can you drink?",
+        [
+          [
+            "Yes",
+            "Right choice!"
+          ],
+          [
+            "No",
+            "It's a pity"
+          ]
+        ]
+      ]
+    ]
+  ],
+  [
+    "Travel",
+    "Would you like to travel?",
+    [
+      [
+        "Yes",
+        "Europe or Asia?",
+        [
+          [
+            "Europe",
+            "Go to Paris!"
+          ],
+          [
+            "Asia",
+            "East or West?",
+            [
+              [
+                "East",
+                "Go to China!"
+              ],
+              [
+                "West",
+                "Go to Turkey!"
+              ]
+            ]
+          ]
+        ]
+      ],
+      [
+        "No",
+        "Stay at home."
+      ]
+    ]
+  ]
+]
