@@ -9,7 +9,7 @@ from rest_framework import serializers
 from django_filters.rest_framework import DjangoFilterBackend
 
 from . import models
-from .serializers import DialogSerializer
+# from .serializers import DialogSerializer
 from .models import Dialog
 
 
@@ -34,17 +34,17 @@ class DialogView(APIView):
             return Response({"dialog": serializer.data})
 
 
+class DialogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Dialog
+        fields = '__all__'
+
+
 class DialogListView(generics.ListCreateAPIView):
     queryset = models.Dialog.objects.all()
     serializer_class = DialogSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('parent',)
-
-
-class DialogSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Dialog
-        fields = 'all'
 
 
 # def api(request):
