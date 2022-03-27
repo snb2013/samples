@@ -11,3 +11,6 @@ class Dialog(models.Model):
     # выбор в меню
     answer_text = models.CharField(max_length=100)
     # ответ бота
+
+    def __str__(self):
+        return self.choice_text

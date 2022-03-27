@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'channels',
+    'rest_framework',
+    # 'channels',
 ]
 
 MIDDLEWARE = [
@@ -69,8 +70,8 @@ TEMPLATES = [
     },
 ]
 
-# WSGI_APPLICATION = 'myfirstbot.wsgi.application'
-ASGI_APPLICATION = "myfirstbot.asgi.application"
+WSGI_APPLICATION = 'myfirstbot.wsgi.application'
+# ASGI_APPLICATION = "myfirstbot.asgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases

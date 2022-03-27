@@ -2,3 +2,4 @@ requests~=2.27.1
 
 Django~=4.0.3
 channels~=3.0.4
+djangorestframework~=3.13.1
