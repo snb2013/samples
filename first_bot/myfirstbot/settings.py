@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-si+@wgf+2w1&z*^t64%trl^yl+f)aot$02$c)l4jj9$agc-k6u
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0']
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost']
 
 
 # Application definition
@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    # 'django_filters',
+    'django_filters',
     # 'channels',
 ]
 
@@ -136,3 +136,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+FILTERS_NULL_CHOICE_LABEL = '---null---'

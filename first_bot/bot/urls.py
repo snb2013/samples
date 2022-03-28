@@ -1,11 +1,11 @@
 from django.urls import path
 
 from . import views
-from .views import DialogView
+from .views import DialogListView
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('api/lists/', DialogView.as_view()),
+    path('api/dialogs/', DialogListView.as_view()),
 
     # path('api/', views.api, name='api'),
     # path('api/lists/', views.lists, name='lists'),
