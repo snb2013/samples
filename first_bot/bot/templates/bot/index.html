@@ -2,10 +2,48 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Хуй</title>
+    <title>Чатбот</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <body>
-    <p>Хуй</p>
+    <div>
+        <a href="http://localhost:8000">В начало</a>
+    </div>
+    <div id="jsonresp" style="margin-top: 100px">
+       <p><label> Вопрос :</label> <span id="choice_text"></span></p>
+       <p><label> Выберите :</label> <span id="answer_text"></span></p>
+
+    </div>
+    <script type="text/javascript">
+    function $_GET(key) {
+        var p = window.location.search;
+        p = p.match(new RegExp(key + '=([^&=]+)'));
+        return p ? p[1] : false;
+    }
+
+    if ($_GET('list')){
+        url_api = "http://localhost:8000/api/dialogs/?parent=" + $_GET('list');
+    }else{
+        url_api = "http://localhost:8000/api/dialogs/?parent=null";
+    }
+
+    $(document).ready(function () {
+        $.ajax({
+                 url : url_api,
+                 type: "GET",
+                 dataType: "json",
+                 success : function (data) {
+                     for (key in data) {
+                          if (data.hasOwnProperty(key)) {
+                            $('#answer_text').after('<p><a href=\"http://localhost:8000/?list=' +
+                            data[key].id + '\" title=\"' + data[key].answer_text + '\">'
+                            + data[key].choice_text +'</a></p>')
+                          }
+                     }
+                     }
+                     });
+                 });
+    </script>
 
 </body>
 </html>
