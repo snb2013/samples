@@ -14,4 +14,4 @@ class DialogListView(generics.ListAPIView):
     queryset = models.Dialog.objects.all()
     serializer_class = DialogSerializer
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('parent',)
+    filterset_fields = ('parent', 'id')

@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <title>Чатбот</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
 </head>
 <body>
     <div>
         <a href="http://localhost:8000">В начало</a>
     </div>
-    <div id="jsonresp" style="margin-top: 100px">
-       <p><label> Вопрос :</label> <span id="choice_text"></span></p>
-       <p><label> Выберите :</label> <span id="answer_text"></span></p>
+    <div id="jsonresp" style="margin-top: 50px">
+       <p><label> Бот:</label> <span id="choice_text"></span></p>
+       <p><label> Выберите:</label> <span id="answer_text"></span></p>
 
     </div>
     <script type="text/javascript">
@@ -22,28 +23,36 @@
     }
 
     if ($_GET('list')){
-        url_api = "http://localhost:8000/api/dialogs/?parent=" + $_GET('list');
+        url_api_parent = "http://localhost:8000/api/dialogs/?parent=" + $_GET('list');
+        url_api_id = "http://localhost:8000/api/dialogs/?id=" + $_GET('list');
     }else{
-        url_api = "http://localhost:8000/api/dialogs/?parent=null";
+        url_api_parent = "http://localhost:8000/api/dialogs/?parent=null";
     }
 
     $(document).ready(function () {
         $.ajax({
-                 url : url_api,
+                 url : url_api_parent,
                  type: "GET",
                  dataType: "json",
                  success : function (data) {
-                     for (key in data) {
+                     for (var key in data) {
                           if (data.hasOwnProperty(key)) {
                             $('#answer_text').after('<p><a href=\"http://localhost:8000/?list=' +
-                            data[key].id + '\" title=\"' + data[key].answer_text + '\">'
-                            + data[key].choice_text +'</a></p>')
+                            data[key].id + '\"id=\"choice\" title=\"' + data[key].answer_text + '\">' + data[key].choice_text +'</a></p>');
                           }
                      }
                      }
                      });
-                 });
-    </script>
 
+        $.ajax({
+                 url : url_api_id,
+                 type: "GET",
+                 dataType: "json",
+                 success : function (data) {
+                            $('#choice_text').text(data[0].answer_text);
+                     }
+                     });
+    });
+    </script>
 </body>
 </html>
