@@ -27,6 +27,7 @@
         url_api_id = "http://localhost:8000/api/dialogs/?id=" + $_GET('list');
     }else{
         url_api_parent = "http://localhost:8000/api/dialogs/?parent=null";
+        url_api_id = ""
     }
 
     $(document).ready(function () {
