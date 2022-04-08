@@ -1,11 +1,12 @@
 from django.urls import path
-
 from . import views
-from .views import DialogListView
+from .views import DialogListView, DialogListViewVue
 
 urlpatterns = [
     path('', views.index, name='index'),
     path('api/dialogs/', DialogListView.as_view()),
+    path('api/dialogs_for_vue/<int:parent_id>/', DialogListViewVue.as_view()),
+    path('vue', views.vue, name='vue'),
 
     # path('api/', views.api, name='api'),
     # path('api/lists/', views.lists, name='lists'),
