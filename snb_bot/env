@@ -1,0 +1,6 @@
+DB_NAME=amgen
+DB_USER=amgen_user
+DB_PASS=nopass
+DB_SERVICE=postgres
+DB_PORT=5432
+
