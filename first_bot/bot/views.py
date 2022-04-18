@@ -13,6 +13,10 @@ def vue(request):
     return render(request, 'bot/vue.html')
 
 
+def snb(request):
+    return render(request, 'bot/bot_snb.html')
+
+
 class DialogListView(generics.ListAPIView):
     queryset = models.Dialog.objects.all()
     serializer_class = DialogSerializer

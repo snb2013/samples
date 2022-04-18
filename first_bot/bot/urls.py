@@ -7,6 +7,7 @@ urlpatterns = [
     path('api/dialogs/', DialogListView.as_view()),
     path('api/dialogs_for_vue/<int:parent_id>/', DialogListViewVue.as_view()),
     path('vue', views.vue, name='vue'),
+    path('snb/', views.snb, name='snb'),
 
     # path('api/', views.api, name='api'),
     # path('api/lists/', views.lists, name='lists'),

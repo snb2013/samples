@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>simplenote</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/spectre.css/0.2.14/spectre.min.css">
+  </head>
+  <body>
+ new Vue({
+  el: '#app',
+  data() {
+    return {
+      info: null
+    };
+  },
+  mounted() {
+    axios
+      .get('http://localhost:8000/api/dialogs_for_vue/1/')
+      .then(response => (this.info = response));
+  }
+});
+<div id="app">
+  {{ info }}
+</div>
+  </body>
+</html>
