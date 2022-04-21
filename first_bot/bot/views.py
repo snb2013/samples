@@ -34,6 +34,3 @@ class DialogListViewVue(generics.ListAPIView):
         else:
             return models.Dialog.objects.filter(parent=None)
 
-# class DialogListViewVue(generics.RetrieveAPIView):
-#     queryset = models.Dialog.objects.all()
-#     serializer_class = DialogSerializer
