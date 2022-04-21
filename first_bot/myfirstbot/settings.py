@@ -38,9 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'django_filters',
-    'corsheaders',
     'drf_yasg',
-    # 'channels',
 ]
 
 # REST_FRAMEWORK = {
@@ -48,7 +46,7 @@ INSTALLED_APPS = [
 # }
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",
+    # "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
