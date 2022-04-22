@@ -11,7 +11,7 @@ var v = new Vue({
     loading: true
   },
   created() {
-    let api_url = 'http://localhost:8000/api/dialogs/?format=json&parent=null';
+    let api_url = '/api/dialogs/?format=json&parent=null';
       this.loading = true;
       this.$http.get(api_url)
           .then((response) => {
@@ -25,7 +25,7 @@ var v = new Vue({
   },
   methods: {
     get_question() {
-      let api_url = 'http://localhost:8000/api/dialogs/?format=json&parent=' + this.list_id;
+      let api_url = '/api/dialogs/?format=json&parent=' + this.list_id;
       this.loading = true;
       this.$http.get(api_url)
           .then((response) => {

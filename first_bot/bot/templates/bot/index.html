@@ -8,7 +8,7 @@
 </head>
 <body>
     <div>
-        <a href="http://localhost:8000">В начало</a>
+        <a href="/">В начало</a>
     </div>
     <div id="jsonresp" style="margin-top: 50px">
        <p><label> Бот:</label> <span id="choice_text"></span></p>
@@ -23,10 +23,10 @@
     }
 
     if ($_GET('list')){
-        url_api_parent = "http://localhost:8000/api/dialogs/?parent=" + $_GET('list');
-        url_api_id = "http://localhost:8000/api/dialogs/?id=" + $_GET('list');
+        url_api_parent = "/api/dialogs/?parent=" + $_GET('list');
+        url_api_id = "/api/dialogs/?id=" + $_GET('list');
     }else{
-        url_api_parent = "http://localhost:8000/api/dialogs/?parent=null";
+        url_api_parent = "/api/dialogs/?parent=null";
         url_api_id = ""
     }
 
@@ -38,7 +38,7 @@
                  success : function (data) {
                      for (var key in data) {
                           if (data.hasOwnProperty(key)) {
-                            $('#answer_text').after('<p><a href=\"http://localhost:8000/?list=' +
+                            $('#answer_text').after('<p><a href=\"/?list=' +
                             data[key].id + '\"id=\"choice\" title=\"' + data[key].answer_text + '\">' + data[key].choice_text +'</a></p>');
                           }
                      }
